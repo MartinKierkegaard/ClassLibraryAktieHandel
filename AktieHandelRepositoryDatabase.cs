@@ -102,51 +102,12 @@ namespace ClassLibraryAktieHandel
         }
 
 
-        public IEnumerable<AktieHandel> GetByMinPris(decimal minPris)
+        public IEnumerable<AktieHandel> GetAllAktieHandlerSortedByAntal()
         {
             var result = new List<AktieHandel>();
             try
             {
-                using (var conn = new SqlConnection(_connectionString))
-                using (var cmd = new SqlCommand(
-                    "SELECT HandelsId, Navn, Antal, HandelsPris FROM AktieHandel WHERE HandelsPris >= @MinPris", conn))
-                {
-                    cmd.Parameters.AddWithValue("@MinPris", minPris);
-                    conn.Open();
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            result.Add(new AktieHandel
-                            {
-                                HandelsId = reader.GetInt32(0),
-                                Navn = reader.GetString(1),
-                                Antal = reader.GetInt32(2),
-                                HandelsPris = reader.GetDecimal(3)
-                            });
-                        }
-                    }
-                }
-            }
-            catch (SqlException ex)
-            {
-                throw new Exception("Databasefejl ved filtrering på pris.", ex);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Ukendt fejl ved filtrering på pris.", ex);
-            }
-            return result;
-        }
-
-
-        public IEnumerable<AktieHandel> GetAllSortedByHandelsPris(bool descending = false)
-        {
-            var result = new List<AktieHandel>();
-            try
-            {
-                string orderBy = descending ? "DESC" : "ASC";
-                string sql = $"SELECT HandelsId, Navn, Antal, HandelsPris FROM AktieHandel ORDER BY HandelsPris {orderBy}";
+                string sql = $"SELECT HandelsId, Navn, Antal, HandelsPris FROM AktieHandel ORDER BY HandelsPris";
 
                 using (var conn = new SqlConnection(_connectionString))
                 using (var cmd = new SqlCommand(sql, conn))
@@ -178,9 +139,47 @@ namespace ClassLibraryAktieHandel
             return result;
         }
 
-
+        public IEnumerable<AktieHandel> GetAktieHandlerByNavn(string navn)
+        {
+            var result = new List<AktieHandel>();
+            try
+            {
+                using (var conn = new SqlConnection(_connectionString))
+                using (var cmd = new SqlCommand(
+                    "SELECT HandelsId, Navn, Antal, HandelsPris FROM AktieHandel WHERE Navn = @Navn", conn))
+                {
+                    cmd.Parameters.AddWithValue("@Navn", navn);
+                    conn.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            result.Add(new AktieHandel
+                            {
+                                HandelsId = reader.GetInt32(0),
+                                Navn = reader.GetString(1),
+                                Antal = reader.GetInt32(2),
+                                HandelsPris = reader.GetDecimal(3)
+                            });
+                        }
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception("Databasefejl ved filtrering på navn.", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Ukendt fejl ved filtrering på navn.", ex);
+            }
+            return result;
+        }
 
     }
 
+
 }
+
+
 

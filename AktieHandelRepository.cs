@@ -74,15 +74,14 @@ namespace ClassLibraryAktieHandel
         public AktieHandel? DeleteAktieHandel(int handelsid)
         {
             var aktieHandel = this.GetById(handelsid);
-            
             if(aktieHandel != null)
               _aktieHandelList.Remove(aktieHandel);
             
             return aktieHandel;
         }
 
-        public IEnumerable<AktieHandel> GetAktieHandlerByNavn(string Navn) { 
-         return _aktieHandelList.FindAll(navn => navn.Navn == Navn);
+        public IEnumerable<AktieHandel> GetAktieHandlerByNavn(string navn) { 
+         return _aktieHandelList.FindAll(x => x.Navn == navn);
         }
 
         public IEnumerable<AktieHandel> GetAllAktieHandlerSortedByAntal()
