@@ -140,6 +140,45 @@ namespace ClassLibraryAktieHandel
         }
 
 
+        public IEnumerable<AktieHandel> GetAllSortedByHandelsPris(bool descending = false)
+        {
+            var result = new List<AktieHandel>();
+            try
+            {
+                string orderBy = descending ? "DESC" : "ASC";
+                string sql = $"SELECT HandelsId, Navn, Antal, HandelsPris FROM AktieHandel ORDER BY HandelsPris {orderBy}";
+
+                using (var conn = new SqlConnection(_connectionString))
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    conn.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            result.Add(new AktieHandel
+                            {
+                                HandelsId = reader.GetInt32(0),
+                                Navn = reader.GetString(1),
+                                Antal = reader.GetInt32(2),
+                                HandelsPris = reader.GetDecimal(3)
+                            });
+                        }
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception("Databasefejl ved sortering på handelspris.", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Ukendt fejl ved sortering på handelspris.", ex);
+            }
+            return result;
+        }
+
+
 
     }
 
