@@ -100,9 +100,48 @@ namespace ClassLibraryAktieHandel
 
             return delete;
         }
+
+
+        public IEnumerable<AktieHandel> GetByMinPris(decimal minPris)
+        {
+            var result = new List<AktieHandel>();
+            try
+            {
+                using (var conn = new SqlConnection(_connectionString))
+                using (var cmd = new SqlCommand(
+                    "SELECT HandelsId, Navn, Antal, HandelsPris FROM AktieHandel WHERE HandelsPris >= @MinPris", conn))
+                {
+                    cmd.Parameters.AddWithValue("@MinPris", minPris);
+                    conn.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            result.Add(new AktieHandel
+                            {
+                                HandelsId = reader.GetInt32(0),
+                                Navn = reader.GetString(1),
+                                Antal = reader.GetInt32(2),
+                                HandelsPris = reader.GetDecimal(3)
+                            });
+                        }
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception("Databasefejl ved filtrering på pris.", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Ukendt fejl ved filtrering på pris.", ex);
+            }
+            return result;
+        }
+
+
+
     }
-
-
 
 }
 
