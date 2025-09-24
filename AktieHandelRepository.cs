@@ -89,5 +89,40 @@ namespace ClassLibraryAktieHandel
             return _aktieHandelList.OrderBy(x => x.Antal).ToList();
         }
 
+        private IEnumerable<AktieHandel> GetAllAktieHandlerSortedByHandelsPris(IEnumerable<AktieHandel> inputliste)
+        {
+            return inputliste.OrderBy(x => x.HandelsPris);
+        }
+
+        private IEnumerable<AktieHandel> GetAllAktieHandlerSortedByHandelsid(IEnumerable<AktieHandel> inputliste)
+        {
+            return inputliste.OrderBy(x => x.HandelsId);
+        }
+
+        /// <summary>
+        /// filtrerer på aktienavn, og sorterer på enten handelsid eller antal
+        /// eller ingen sortering
+        /// </summary>
+        /// <param name="navn">navn på aktien</param>
+        /// <param name="sortering">sortering på : 1= handelsid, 2= handelspris, 0= ingensortering</param>
+        /// <returns>IEnumerable<AktieHandel></returns>
+        public IEnumerable<AktieHandel> GetAktieHandelerByNavnSorted(string navn, int sortering = 0) { 
+
+            IEnumerable<AktieHandel> resultatliste = GetAktieHandlerByNavn(navn);
+
+            if (sortering == 1)
+            {
+                return GetAllAktieHandlerSortedByHandelsid(resultatliste);
+            }
+            else if (sortering == 2) {
+                return GetAllAktieHandlerSortedByHandelsPris(resultatliste);
+            }
+            
+            return resultatliste;
+
+        }
+
+
+
     }
 }
